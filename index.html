@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<title>Box2d Test</title>
+<link rel="manifest" href="manifest.json">
+<style>
+td {width: 4.5rem;
+height: 4.5rem;
+border-radius: 100%;
+}
+#gameoverscreen, #winscreen {
+  position: absolute;
+  display: none;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  color: white;
+  font-weight: bold;
+  text-align:center;
+}
+
+#startscreen {
+  position: absolute;
+  display: none;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  color: white;
+  font-weight: bold;
+  text-align:center;
+}
+
+body {
+	background-image: url("assets/grassbackground.jpg") 100% 100% no-repeat;
+	background-size: cover;
+}
+#table1 td {background: navy;}
+#table3 td  {background: navy;}
+#centertable {     width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    align-items: center;
+    justify-content: center; 
+    overflow: auto; 
+    z-index:1;	}
+
+	#highscore {z-index:2;   
+	display: none;
+	top: 1.25rem;
+	left: 1.25rem;
+	position: fixed;
+	font-family: Arial Black, Verdana, Times, serif, "Times New Roman";
+	font-weight: bold;
+	color: white;
+	font-size: 2rem;}
+	
+	#arrow{z-index:5; display: inline-block; top: 1.25rem; right: 1.25rem; display: none;
+	position: fixed;
+	font-family: Arial Black, Verdana, Times, serif, "Times New Roman";
+	font-weight: bold;
+	color: white;
+	font-size: 2rem;
+	}
+	
+	#music{z-index:5; bottom: 1.25rem; right: 1.25rem; display:none;
+	position: fixed;
+	font-family: Arial Black, Verdana, Times, serif, "Times New Roman";
+	font-weight: bold;
+	color: white;
+	font-size: 2rem;
+	}
+	
+	#soundcontrol{z-index:5; bottom: 1.25rem; left: 1.25rem; display:none;
+	position: fixed;
+	font-family: Arial Black, Verdana, Times, serif, "Times New Roman";
+	font-weight: bold;
+	color: white;
+	font-size: 2rem;
+	}
+	
+	#explanation {
+  position: absolute;
+  display: none;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  margin: -100px 0 0 -150px;
+  color: white;
+  font-family: Arial Black, Verdana, Times, serif, "Times New Roman";
+  font-weight: bold;
+  text-align:justify;
+  font-size: 1.5rem;
+}
+	
+</style>
+
+<script>
+//the constructor for creating objects describing cells
+function cell(){
+this.empty = "true";
+}
+
+// array for storing the left table cells
+var lefttable = [];
+//array for storing the colors 
+var colors = ["red", "green", "blue", "yellow"];
+//array for storing the right table cells
+var righttable = [];
+//function filling in the lefttable and righttable arrays contained in start function
+function fillcellstate() {for (i=0; i<16; i++){lefttable.push(new cell()); righttable.push(new cell());} } 
+//the score of the game
+var Totalscore = 0;
+
+// the score necessary to reach to win the game
+var Winscore = 1024;
+
+//flag to show or hide the explanation
+var explained = false;
+
+//flag to see if the game has been continued
+var cont = false;
+
+//flag to switch music on and off
+var musicon = false;
+
+//flag to switch sound on and off
+var sounds = true;
+
+ // function for filling in the left table contained in the start function. 
+function fillerleft() {
+//to define the way the td will be filled with colors and fill them with colors
+emptychecker();
+var choise = Math.random();
+if ((choise>=0)&&(choise<=0.20)){ for (i=1; i<17; i++)
+{ var color = Math.random(); 
+if ((color>=0)&&(color<=0.25)) {document.getElementById(""+i+"").style.background = "red";  lefttable[i-1].empty="false"}
+if ((color>0.25)&&(color<=0.5)) {document.getElementById(""+i+"").style.background = "green";  lefttable[i-1].empty="false"}
+if ((color>0.5)&&(color<=0.75)) {document.getElementById(""+i+"").style.background = "blue";  lefttable[i-1].empty="false"}
+if ((color>0.75)&&(color<=1)) {document.getElementById(""+i+"").style.background = "yellow";  lefttable[i-1].empty="false"}
+} }
+else if  ((choise>0.20)&&(choise<=0.40)) { for (i=16; i>0; i--){ var color = Math.random(); 
+if ((color>=0)&&(color<=0.25)) {document.getElementById(""+i+"").style.background = "blue";  lefttable[i-1].empty="false"}
+if ((color>0.25)&&(color<=0.5)) {document.getElementById(""+i+"").style.background = "yellow";  lefttable[i-1].empty="false"}
+if ((color>0.5)&&(color<=0.75)) {document.getElementById(""+i+"").style.background = "red"; lefttable[i-1].empty="false"}
+if ((color>0.75)&&(color<=1)) {document.getElementById(""+i+"").style.background = "green";  lefttable[i-1].empty="false"}
+}}
+else if  ((choise>0.40)&&(choise<=0.60)) { for (i=1; i<17; i++){ var color = Math.random(); 
+if ((color>=0)&&(color<=0.25)) {document.getElementById(""+i+"").style.background = "green";  lefttable[i-1].empty="false"}
+if ((color>0.25)&&(color<=0.5)) {document.getElementById(""+i+"").style.background = "red";  lefttable[i-1].empty="false"}
+if ((color>0.5)&&(color<=0.75)) {document.getElementById(""+i+"").style.background = "yellow";  lefttable[i-1].empty="false"}
+if ((color>0.75)&&(color<=1)) {document.getElementById(""+i+"").style.background = "blue";  lefttable[i-1].empty="false"}
+}}
+else if  ((choise>0.60)&&(choise<=0.80)) { for (i=16; i>0; i--){ var color = Math.random(); 
+if ((color>=0)&&(color<=0.25)) {document.getElementById(""+i+"").style.background = "yellow";  lefttable[i-1].empty="false"}
+if ((color>0.25)&&(color<=0.5)) {document.getElementById(""+i+"").style.background = "green";  lefttable[i-1].empty="false"}
+if ((color>0.5)&&(color<=0.75)) {document.getElementById(""+i+"").style.background = "blue";  lefttable[i-1].empty="false"}
+if ((color>0.75)&&(color<=1)) {document.getElementById(""+i+"").style.background = "red";  lefttable[i-1].empty="false"}
+}}
+else if  ((choise>0.80)&&(choise<=1)) { for (i=1; i<17; i++){ var color = Math.random(); 
+if ((color>=0)&&(color<=0.25)) {document.getElementById(""+i+"").style.background = "red";  lefttable[i-1].empty="false"}
+if ((color>0.25)&&(color<=0.5)) {document.getElementById(""+i+"").style.background = "blue";  lefttable[i-1].empty="false"}
+if ((color>0.5)&&(color<=0.75)) {document.getElementById(""+i+"").style.background = "yellow";  lefttable[i-1].empty="false"}
+if ((color>0.75)&&(color<=1)) {document.getElementById(""+i+"").style.background = "green";  lefttable[i-1].empty="false"}
+}}
+
+}
+
+
+//function for filling the right table to be connected by onclick event to each td in the left table
+function fillerright (el) {
+//if (clicked==false){
+ var identifier =  el.id; identifier1="r"+identifier;
+if ((document.getElementById(""+identifier+"").style.background=="red")&&(righttable[identifier-1].empty=="true")){if(sounds){document.getElementById("leftbuttonclick").play();} document.getElementById(""+identifier1+"").style.background="red"; righttable[identifier-1].empty="false"; destroychecker(); fillerleft(); /* clicked=true;  setTimeout("fillerleft()", 1000);*/}
+else if ((document.getElementById(""+identifier+"").style.background=="green")&&(righttable[identifier-1].empty=="true")){if(sounds){document.getElementById("leftbuttonclick").play();}document.getElementById(""+identifier1+"").style.background="green";  righttable[identifier-1].empty="false"; destroychecker(); fillerleft(); /* clicked=true; setTimeout("fillerleft()", 1000);*/}
+else if ((document.getElementById(""+identifier+"").style.background=="blue")&&(righttable[identifier-1].empty=="true")){if(sounds){document.getElementById("leftbuttonclick").play();}document.getElementById(""+identifier1+"").style.background="blue"; righttable[identifier-1].empty="false"; destroychecker(); fillerleft(); /*clicked=true; setTimeout("fillerleft()", 1000);*/}
+else if ((document.getElementById(""+identifier+"").style.background=="yellow")&&(righttable[identifier-1].empty=="true")){if(sounds){document.getElementById("leftbuttonclick").play();}  document.getElementById(""+identifier1+"").style.background="yellow"; righttable[identifier-1].empty="false"; destroychecker(); fillerleft(); /*clicked=true; setTimeout("fillerleft()", 500);*/}
+else {if(sounds){document.getElementById("rightcelloccupied").play();}}
+
+} 
+
+
+//it checks if there is four same color boxes in a row, and if so, empties the td's and adds score
+function destroychecker () {for (i=0; i<colors.length; i++){
+
+if ((document.getElementById("r1").style.background==""+colors[i]+"")&&(document.getElementById("r2").style.background==""+colors[i]+"")&&(document.getElementById("r3").style.background==""+colors[i]+"")&&(document.getElementById("r4").style.background==""+colors[i]+"")){document.getElementById("r1").style.background="navy"; document.getElementById("r2").style.background="navy"; document.getElementById("r3").style.background="navy"; document.getElementById("r4").style.background="navy"; righttable[0].empty='true'; righttable[1].empty='true';  righttable[2].empty='true'; righttable[3].empty='true'; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+
+if ((document.getElementById("r5").style.background==""+colors[i]+"")&&(document.getElementById("r6").style.background==""+colors[i]+"")&&(document.getElementById("r7").style.background==""+colors[i]+"")&&(document.getElementById("r8").style.background==""+colors[i]+"")) { righttable[4].empty ='true'; righttable[5].empty ='true'; righttable[6].empty = 'true'; righttable[7].empty ='true'; document.getElementById("r5").style.background="navy"; document.getElementById("r6").style.background="navy"; document.getElementById("r7").style.background="navy"; document.getElementById("r8").style.background="navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+
+if ((document.getElementById("r9").style.background==""+colors[i]+"")&&(document.getElementById("r10").style.background==""+colors[i]+"")&&(document.getElementById("r11").style.background==""+colors[i]+"")&&(document.getElementById("r12").style.background==""+colors[i]+"")) {righttable[8].empty='true'; righttable[9].empty='true'; righttable[10].empty='true'; righttable[11].empty='true'; document.getElementById("r9").style.background="navy"; document.getElementById("r10").style.background ='navy'; document.getElementById("r11").style.background ="navy"; document.getElementById("r12").style.background = "navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+
+if ((document.getElementById("r13").style.background==""+colors[i]+"")&&(document.getElementById("r14").style.background==""+colors[i]+"")&&(document.getElementById("r15").style.background==""+colors[i]+"")&&(document.getElementById("r16").style.background==""+colors[i]+"")) {righttable[12].empty ='true'; righttable[13].empty='true'; righttable[14].empty='true'; righttable[15].empty='true'; document.getElementById("r13").style.background="navy"; document.getElementById("r14").style.background="navy"; document.getElementById("r15").style.background = "navy"; document.getElementById("r16").style.background = "navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}}
+ 
+if ((document.getElementById("r1").style.background==""+colors[i]+"")&&(document.getElementById("r5").style.background==""+colors[i]+"")&&(document.getElementById("r9").style.background==""+colors[i]+"")&&(document.getElementById("r13").style.background==""+colors[i]+"")) { righttable[0].empty='true'; righttable[4].empty='true'; righttable[8].empty='true'; righttable[12].empty='true'; document.getElementById("r1").style.background="navy"; document.getElementById("r5").style.background="navy"; document.getElementById("r9").style.background="navy"; document.getElementById("r13").style.background="navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+
+if ((document.getElementById("r2").style.background==""+colors[i]+"")&&(document.getElementById("r6").style.background==""+colors[i]+"")&&(document.getElementById("r10").style.background==""+colors[i]+"")&&(document.getElementById("r14").style.background==""+colors[i]+"")) {righttable[1].empty ='true'; righttable[5].empty ='true'; righttable[9].empty ='true'; righttable[13].empty ='true'; document.getElementById("r2").style.background="navy"; document.getElementById("r6").style.background="navy"; document.getElementById("r10").style.background="navy"; document.getElementById("r14").style.background="navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}}
+ 
+if ((document.getElementById("r3").style.background==""+colors[i]+"")&&(document.getElementById("r7").style.background==""+colors[i]+"")&&(document.getElementById("r11").style.background==""+colors[i]+"")&&(document.getElementById("r15").style.background==""+colors[i]+"")) {righttable[2].empty= 'true'; righttable[6].empty ='true'; righttable[10].empty ='true'; righttable[14].empty ='true'; document.getElementById("r3").style.background="navy"; document.getElementById("r7").style.background="navy"; document.getElementById("r11").style.background="navy"; document.getElementById("r15").style.background="navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+
+if ((document.getElementById("r4").style.background==""+colors[i]+"")&&(document.getElementById("r8").style.background==""+colors[i]+"")&&(document.getElementById("r12").style.background==""+colors[i]+"")&&(document.getElementById("r16").style.background==""+colors[i]+"")) { righttable[3].empty= 'true'; righttable[7].empty ='true'; righttable[11].empty = 'true'; righttable[15].empty ='true'; document.getElementById("r4").style.background="navy"; document.getElementById("r8").style.background="navy"; document.getElementById("r12").style.background="navy"; document.getElementById("r16").style.background="navy"; Totalscore = Totalscore+4; document.getElementById("score").innerHTML = Totalscore; if((sounds)&&(Totalscore!=Winscore)){document.getElementById("pointscollected").play();}} 
+}
+winchecker();
+}
+
+//function to check if all the cells in the right table are occupied
+function emptychecker(){var occupied=0; for (i=0; i<righttable.length; i++){if(righttable[i].empty=="false"){occupied=occupied+1;}  } if(occupied==16){
+document.getElementById("startscreen").style.display = "none";
+document.getElementById("highscore").style.display = "none";
+document.getElementById("centertable").style.display = "none";
+document.getElementById("gameoverscreen").style.display = "inline-block";
+document.getElementById("reloader").onclick = reloader;
+document.getElementById("gameoverscreen").style.fontSize =  Math.round(window.innerHeight/10)+"px";
+document.getElementById("gameoverscreen").style.width = Math.round(window.innerWidth/2)+ "px";
+document.getElementById("gameoverscreen").style.left = "50%";
+document.getElementById("gameoverscreen").style.top = "50%";
+document.getElementById("gameoverscreen").style.marginLeft = -Math.round(window.innerWidth/4)+"px";
+document.getElementById("gameoverscreen").style.marginTop = -Math.round(window.innerHeight*1.5/10)+ "px";
+document.getElementById("finalscore").innerHTML = Totalscore;
+if (sounds)
+{document.getElementById("gameoversound").play();}
+}
+}
+
+//function to check if totalscore reached 1024
+function winchecker(){
+if ((Totalscore==Winscore)&&(cont==false)){document.getElementById("startscreen").style.display = "none";
+//document.getElementById("highscore").style.display = "none";
+document.getElementById("centertable").style.display = "none";
+document.getElementById("gameoverscreen").style.display = "none";
+document.getElementById("winscreen").style.display = "inline-block";
+document.getElementById("winscreen").style.fontSize =  Math.round(window.innerHeight/10)+"px";
+document.getElementById("winscreen").style.width = Math.round(window.innerWidth/2)+ "px";
+document.getElementById("winscreen").style.left = "50%";
+document.getElementById("winscreen").style.top = "50%";
+document.getElementById("winscreen").style.marginLeft = -Math.round(window.innerWidth/4)+"px";
+document.getElementById("winscreen").style.marginTop = -Math.round(window.innerHeight*1.5/10)+ "px";
+document.getElementById("newgame").onclick = reloader;
+document.getElementById("continue").onclick = continuation;
+if(sounds==true)
+{document.getElementById("winsound").play();}
+}
+}
+
+//function to continue the game after winning
+function continuation(){
+document.getElementById("winscreen").style.display = "none";
+document.getElementById("highscore").style.display = "flex";
+document.getElementById("centertable").style.display = "flex";
+document.getElementById("arrow").style.display = "block";
+document.getElementById("music").style.display = "block";
+document.getElementById("soundcontrol").style.display = "block";
+document.getElementById("soundcontrol").onclick = soundon;
+cont = true;
+}
+
+//decrease the score and make another move
+function savetheday() {if (Totalscore>0){Totalscore=Totalscore-4; document.getElementById("score").innerHTML=Totalscore; if(sounds){document.getElementById("losingpoints").play();} fillerleft();} else if (Totalscore==0){if(sounds){document.getElementById("nopoints").play();}}}
+
+//function to empty the right table cell and decrease the score
+function empty(el){
+var identifier =  el.id; identifier1 = identifier.slice(1); 
+if((righttable[identifier1-1].empty=="false")&&(Totalscore>0)){document.getElementById(""+identifier+"").style.background = "navy"; righttable[identifier1-1].empty="true";  Totalscore=Totalscore-4; document.getElementById("score").innerHTML=Totalscore; if(sounds){document.getElementById("losingpoints").play();}} else {if(sounds){document.getElementById("nopoints").play();}}
+}
+
+// fuction to show the start screen and hide all the rest
+function initialstate(){
+document.getElementById("startscreen").style.display = "inline-block";
+document.getElementById("startscreen").style.fontSize =  Math.round(window.innerHeight/10)+"px";
+document.getElementById("startscreen").style.width = Math.round(window.innerWidth/2)+ "px";
+document.getElementById("startscreen").style.left = "50%";
+document.getElementById("startscreen").style.top = "50%";
+document.getElementById("startscreen").style.marginLeft = -Math.round(window.innerWidth/4)+"px";
+document.getElementById("startscreen").style.marginTop =  -Math.round(window.innerHeight/20)+"px";
+document.getElementById("gameoverscreen").style.display = "none";
+document.getElementById("winscreen").style.display = "none";
+document.getElementById("explanation").style.display = "none";
+document.getElementById("arrow").style.display = "none";
+document.getElementById("music").style.display = "none";
+document.getElementById("soundcontrol").style.display = "none";
+}
+
+// function that starts the game
+function start(){
+document.getElementById("startscreen").style.display = "none";
+document.getElementById("gameoverscreen").style.display = "none";
+document.getElementById("highscore").style.display = "flex";
+document.getElementById("centertable").style.display = "flex";
+//document.getElementById("arrow").style.display = "inline-block";
+
+//document.getElementById("arrow").height =  "50px";
+//document.getElementById("arrow").width =  "50px";
+document.getElementById("arrow").style.display = "block";
+document.getElementById("music").style.display = "block";
+document.getElementById('music').style.opacity="0.5";
+document.getElementById("soundcontrol").style.display = "block";
+document.getElementById("soundcontrol").style.opacity = "1";
+document.getElementById("soundcontrol").onclick = soundon;
+fillcellstate(); 
+fillerleft();
+}
+
+//function to start the game once again when the game is over
+function reloader(){
+
+for (i=0; i<righttable.length; i++){righttable[i].empty="true"; document.getElementById("r"+(i+1)).style.background="navy";} occupied=0; Totalscore=0; document.getElementById('score').innerHTML = 0;
+document.getElementById("startscreen").style.display = "none";
+document.getElementById("gameoverscreen").style.display = "none";
+document.getElementById("winscreen").style.display = "none";
+document.getElementById("highscore").style.display = "flex";
+document.getElementById("centertable").style.display = "flex";
+document.getElementById("explanation").style.display = "none";
+document.getElementById("arrow").style.display = "block";
+document.getElementById("music").style.display = "block";
+document.getElementById("soundcontrol").style.display = "block";
+document.getElementById("soundcontrol").onclick = soundon;
+//document.getElementById('music').style.opacity="0.5";
+cont=false;
+fillerleft();
+}
+
+// function showing how to play the game
+function explain(){if(explained==false){document.getElementById('centertable').style.display = "none";
+document.getElementById('explanation').style.display = "block"; 
+document.getElementById("explanation").style.width = Math.round(window.innerWidth/2)+ "px";
+document.getElementById("explanation").style.height = Math.round(window.innerHeight/2)+ "px";
+document.getElementById("explanation").style.left = "50%";
+document.getElementById("explanation").style.top = "50%";
+document.getElementById("explanation").style.marginLeft = -Math.round(window.innerWidth/4)+"px";
+document.getElementById("explanation").style.marginTop = -Math.round(window.innerHeight/4)+ "px";
+document.getElementById("explanation").onclick = explain;
+document.getElementById("arrow").onclick = explain;
+
+explained=true;} else if(explained==true){document.getElementById('centertable').style.display = "flex";
+document.getElementById('explanation').style.display = "none"; explained=false;
+document.getElementById("explanation").onclick = explain;
+document.getElementById("arrow").onclick = explain;
+}}
+
+// function to switch music on and off
+function music(){
+if(musicon==false){document.getElementById('music').style.opacity="1"; musicon=true; document.getElementById("sound").play();}
+else if (musicon==true) {document.getElementById('music').style.opacity="0.5"; musicon=false; document.getElementById("sound").pause();}
+}
+
+// function to switch sound on and off
+
+function soundon(){
+if(sounds==false){document.getElementById('soundcontrol').style.opacity="1"; sounds=true;}
+else if (sounds==true) {document.getElementById('soundcontrol').style.opacity="0.5"; sounds=false;}
+}
+
+</script>
+</head>
+<body onload="initialstate()">
+<div id="startscreen" onclick="start()">CLICK TO START</div>
+<div id="highscore">SCORE:&nbsp;<span id="score" onclick="savetheday()" title="click the digit to decrease the score and make another move">0</span></div>
+<div id="arrow" onclick="explain()">HOW TO PLAY</div>
+<div id="explanation" onclick="explain()">THE OBJECTIVE OF THE GAME IS TO EARN POINTS. YOU NEED TO CLICK ON A BALL FROM THE LEFT SQUARE TO FILL THE CORRESPONDING POSITION OF THE RIGHT SQUARE WITH THE BALL OF THE SAME COLOR. IF YOU COLLECT FOUR BALLS OF THE SAME COLOR IN ONE ROW OR COLUMN OF THE RIGHT TABLE IT BECOMES EMPTY AND YOU EARN 4 POINTS. IF THE SITUATION IS NOT FAVOURABLE BUT YOU HAVE AT LEAST 4 POINTS YOU CAN CLICK ON THE SCORE DIGIT AND MAKE ANOTHER MOVE WITHOUT HAVING TO PICK UP ONE OF THE BALLS FROM THE LEFT TABLE (4 POINTS WILL BE DEDUCTED). YOU CAN ALSO CLICK ON A RIGHT TABLE SECTOR OCCUPIED BY A BALL WITH UNFAVOURABLE COLOR AND IT WILL BE CLEARED (AGAIN 4 POINTS WILL BE DEDUCTED). THE GAME IS OVER WHEN THE RIGHT TABLE IS FULL OF COLORED BALLS. YOU WIN THE GAME WHEN YOU COLLECT 1024 POINTS.</div>
+<div id="music" onclick="music()">MUSIC</div>
+<div id="centertable">
+<table id="table1" title="Click on a cell to fill the corresponding cell of the right table with the same color. A row or a column of cells with the same color adds 4 points.">
+<tr><td id="1" onclick="fillerright(this)"></td><td id="2" onclick="fillerright(this)"></td><td id="3" onclick=" fillerright(this)"></td><td id="4" onclick="fillerright(this)"></td></tr>
+<tr><td id="5" onclick="fillerright(this)"></td><td id="6" onclick="fillerright(this)"></td><td id="7" onclick="fillerright(this)"></td><td id="8" onclick="fillerright(this)"></td></tr>
+<tr><td id="9" onclick="fillerright(this)"></td><td id="10" onclick="fillerright(this)"></td><td id="11" onclick=" fillerright(this)"></td><td id="12" onclick="fillerright(this)"></td></tr>
+<tr><td id="13" onclick="fillerright(this)"></td><td id="14" onclick="fillerright(this)"></td><td id="15" onclick=" fillerright(this)"></td><td id="16" onclick="fillerright(this)"></td></tr>
+</table>
+<table>
+<tr><td></td></tr>
+<tr><td></td></tr>
+<tr><td></td></tr>
+<tr><td></td></tr>
+</table>
+<table id="table3" title="Click on a cell to empty it. It takes 4 points">
+<tr><td id="r1" onclick="empty(this)"></td><td id="r2" onclick="empty(this)"></td><td id="r3" onclick="empty(this)"></td><td id="r4" onclick="empty(this)"></td></tr>
+<tr><td id="r5" onclick="empty(this)"></td><td id="r6" onclick="empty(this)"></td><td id="r7" onclick="empty(this)"></td><td id="r8" onclick="empty(this)"></td></tr>
+<tr><td id="r9" onclick="empty(this)"></td><td id="r10" onclick="empty(this)"></td><td id="r11" onclick="empty(this)"></td><td id="r12" onclick="empty(this)"></td></tr>
+<tr><td id="r13" onclick="empty(this)"></td><td id="r14" onclick="empty(this)"></td><td id="r15" onclick="empty(this)"></td><td id="r16" onclick="empty(this)"></td></tr>
+</table>
+</div>
+<div id="gameoverscreen">GAME OVER!<br/>YOUR SCORE IS <span id="finalscore"></span><br/><span id="reloader">TRY AGAIN</span></div>
+
+<div id="winscreen">YOU WIN!<br/><span id="continue">CONTINUE</span><br/><span id="newgame">NEW GAME</span></div>
+<div id="soundcontrol" onclick="soundon()">SOUNDS</div>
+<audio id="sound" loop>
+<source src="assets/backgroundmusic.mp3" type="audio/mpeg">
+</audio>
+<audio id="nopoints">
+<source src="assets/nopoints.wav" type="audio/mpeg">
+</audio>
+<audio id="losingpoints">
+<source src="assets/losingpoints.wav" type="audio/mpeg">
+</audio>
+<audio id="leftbuttonclick">
+<source src="assets/leftbuttonclick.wav" type="audio/mpeg">
+</audio>
+<audio id="rightcelloccupied">
+<source src="assets/rightcelloccupied.wav" type="audio/mpeg">
+</audio>
+<audio id="pointscollected">
+<source src="assets/pointscollected.mp3" type="audio/mpeg">
+</audio>
+<audio id="gameoversound">
+<source src="assets/gameover.wav" type="audio/mpeg">
+</audio>
+<audio id="winsound">
+<source src="assets/tadah.wav" type="audio/mpeg">
+</audio>
+</body>
+</html>
