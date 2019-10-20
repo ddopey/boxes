@@ -29,7 +29,6 @@ border-radius: 100%;
   color: white;
   font-weight: bold;
   text-align:center;
-  vertical-align: middle;
 }
 	
 html {
@@ -103,25 +102,6 @@ html {
 </style>
 
 <script>
-/*
-function fullScreen() {
-  // Kind of painful, but this is how it works for now
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen();
-  } else if (document.documentElement.mozRequestFullScreen) {
-    document.documentElement.mozRequestFullScreen();
-  } else if (document.documentElement.webkitRequestFullscreen) {
-    document.documentElement.webkitRequestFullscreen();
-  } else if (document.documentElement.msRequestFullscreen) {
-    document.documentElement.msRequestFullscreen();
-  }
-}
-
-function lock(orientation) {
-  fullScreen();
-  screen.orientation.lock(orientation);
-}
-	*/
 
 //the constructor for creating objects describing cells
 function cell(){
@@ -291,7 +271,7 @@ if((righttable[identifier1-1].empty=="false")&&(Totalscore>0)){document.getEleme
 
 // fuction to show the start screen and hide all the rest
 function initialstate(){
-document.getElementById("startscreen").style.display = "inline-block";
+document.getElementById("startscreen").style.display = "block";
 document.getElementById("startscreen").style.fontSize =  Math.round(window.innerHeight/10)+"px";
 document.getElementById("startscreen").style.width = Math.round(window.innerWidth/2)+ "px";
 document.getElementById("startscreen").style.left = "50%";
