@@ -103,7 +103,7 @@ html {
 </style>
 
 <script>
-
+/*
 function fullScreen() {
   // Kind of painful, but this is how it works for now
   if (document.documentElement.requestFullscreen) {
@@ -121,6 +121,7 @@ function lock(orientation) {
   fullScreen();
   screen.orientation.lock(orientation);
 }
+	*/
 
 //the constructor for creating objects describing cells
 function cell(){
@@ -377,7 +378,7 @@ else if (sounds==true) {document.getElementById('soundcontrol').style.opacity="0
 
 </script>
 </head>
-<body onload="initialstate(); lock('landscape')">
+<body onload="initialstate()">
 <div id="startscreen" onclick="start()">CLICK TO START</div>
 <div id="highscore">SCORE:&nbsp;<span id="score" onclick="savetheday()" title="click the digit to decrease the score and make another move">0</span></div>
 <div id="arrow" onclick="explain()">HOW TO PLAY</div>
