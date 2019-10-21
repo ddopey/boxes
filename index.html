@@ -21,17 +21,24 @@ border-radius: 100%;
 }
 
 #startscreen {
-  position: absolute;
+  margin: auto;
+  /*position: absolute;*/
   display: none;
+
   z-index: 5;
+/*
   top: 50%;
   left: 50%;
+     */
   color: white;
+
   font-weight: bold;
   text-align:center;
 }
 	
-body {
+html, body {
+height: 100%;
+display: grid;
   /*background: url("assets/grassbackgroundsmallest.jpg"); no-repeat center center fixed;*/
   /*background-size: cover;
   background-repeat: no-repeat;
@@ -275,11 +282,12 @@ if((righttable[identifier1-1].empty=="false")&&(Totalscore>0)){document.getEleme
 function initialstate(){
 document.getElementById("startscreen").style.display = "inline-block";
 document.getElementById("startscreen").style.fontSize =  Math.round(window.innerHeight/10)+"px";
+/*
 document.getElementById("startscreen").style.width = Math.round(window.innerWidth/2)+ "px";
 document.getElementById("startscreen").style.left = "50%";
 document.getElementById("startscreen").style.top = "50%";
 document.getElementById("startscreen").style.marginLeft = -Math.round(window.innerWidth/4)+"px";
-document.getElementById("startscreen").style.marginTop =  -Math.round(window.innerHeight/20)+"px";
+document.getElementById("startscreen").style.marginTop =  -Math.round(window.innerHeight/20)+"px";*/
 document.getElementById("gameoverscreen").style.display = "none";
 document.getElementById("winscreen").style.display = "none";
 document.getElementById("explanation").style.display = "none";
